@@ -16,10 +16,11 @@ client.get('toatalinandout:gameid:10', function (error, result) {
         throw error;
     }
     console.log('GET result ->' + result);
-    res.send(result);
+    //res.send(result);
 });
 
-app.get('/trxTotalIn', (req, res) => {
+app.get('/', (req, res) => {
+	console.log("get address");
     client.get('toatalinandout:gameid:10', function (error, result) {
         if (error) {
             console.log(error);
