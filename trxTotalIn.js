@@ -6,12 +6,27 @@ const express = require('express')
 const app = express();
 const port = 3000
 
-var hasUpdate = false;
+const BigNumber = require('bignumber.js');
+
+const TronWeb = require('tronweb');
+const HttpProvider = TronWeb.providers.HttpProvider;
+
+const TRONNODE = "https://api.trongrid.io";
+const fullNode = new HttpProvider(TRONNODE);
+const solidityNode = new HttpProvider(TRONNODE);
+const eventServer = TRONNODE;
+const privateKey = process.env.CONTRACT_KEY; 
+const tronWeb = new TronWeb(fullNode, solidityNode, eventServer, privateKey);
 
 client.on('connect', function() {
     console.log('Redis client connected');
 });
 
+
+updateDividend();
+
+
+/*
 var j = schedule.scheduleJob('0 5 0 * * 0', function() {
 	    //autoClear();
 	//    saveBeforeClear(()=>{
@@ -19,55 +34,38 @@ var j = schedule.scheduleJob('0 5 0 * * 0', function() {
 	//              })
 		updateDividend();
 	 });
-/*
-setInterval(()=>{
-  let currDate = new Date();
-  let currWeekDay = currDate.getUTCDay();
-  let currHour = currDate.getUTCHours()
-  let currMinute = currDate.getUTCMinutes()
-  if (currWeekDay == 0 && currHour == 0 && currMinute < 6&& currMinute > 5) {
-    if(hasUpdate==false){
-        updateDividend();
-        hasUpdate = true;
-    }
-  } else {
-      hasUpdate = false;
-  }
-},1000);
-
 */
 
-app.get('/', (req, res) => {
-//	console.log("get address");
-    client.get('toatalinandout:gameid:10', function (error, result) {
-        if (error) {
-            console.log(error);
-            throw error;
-        }
-       // console.log('GET result ->' + result);
-        res.send(result);
-    });
-    
-});
+
+
+function claim(value) {
+    value = Math.round(value*1e6);
+    const gameContractAddress = "TCUM5Dx3A5PVqnBDYtZAgdZhW2sqxMYTMC";
+        tronWeb.contract().at(gameContractAddress).then(ctr=>{
+            if (ctr == null) {
+                logger.error("fail to get game contract");
+            } else {
+                console.log("try to claim TRX from game contract");
+                ctr.claim(value).send();
+            }
+        }).catch(e=>{
+            logger.error("get contract exception:", e);
+        });
+}
 
 function updateDividend(){
     client.get('toatalinandout:gameid:10', function (error, result) {
 	console.log(result);
 	result = JSON.parse(result);
         var current_divident = (result.TotalIn-result.TotalOut)*0.7*0.2;
-        var totalStats = {
-            PlayerMined : result.PlayerMined,
-            OtherMined : result.OtherMined,
-            TotalIn : result.TotalIn,
-            TotalOut : result.TotalOut+current_divident/0.7,
-	    TotalDivident : result.TotalDivident+current_divident
-        };
+        var claim_value = (result.TotalIn-result.TotalOut)*0.2;
+        result.TotalOut = result.TotalOut+claim_value;
+        result.TotalDivident = result.TotalDivident+current_divident;
         console.log("updateDividend",JSON.stringify(totalStats));
-        client.SET('toatalinandout:gameid:10', JSON.stringify(totalStats));
+        client.SET('toatalinandout:gameid:10', JSON.stringify(result));
+        claim(claim_value);
     });
 }
 
 
 
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
