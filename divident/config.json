@@ -1,0 +1,21 @@
+{
+    "tokenLimits": [
+        {"token" : "TRX", "anteMin" : 1, "anteMax" : 10000, "tripMax": 10000}
+    ],
+    "pub_key": "EOS598mBavS3axirGL4AVmzky9xMfnNMR1tdkJAoSLpWZqRDmjxhR",
+    "blindWinRatio": [0, 0, 0, 0, 0.5, 1.5, 3, 10, 50, 500],
+    "tripWinRatio": [-1, -1, -1, 3, 4, 7, 8, 30, 40, 50],
+    "tmevAddress": "TNDTpnSoRmDXMtzhZUuvq72pNEWqPYBzru",
+    "apiNode": "https://api.shasta.trongrid.io/",
+    "mainnet":"https://api.trongrid.io",
+    "monsters": [
+        {"type" : 0, "hp" : 500000, "name" : "Wild Wolf"}, 
+        {"type" : 1, "hp" : 2000000, "name" : "Dire Wolf"}, 
+        {"type" : 2, "hp" : 5000000, "name" : "Fire Sprite"}, 
+        {"type" : 3, "hp" : 15000000, "name" : "Evil Unicon"}, 
+        {"type" : 4, "hp" : 50000000, "name" : "Shadow Dragon"}
+    ],
+    "monsterDropRatio" : 0.001,
+    "monsterDropDiv":[0.2, 0.5, 0.2, 0.1],
+    "TMEVMiningRatio" : 0.005
+}
